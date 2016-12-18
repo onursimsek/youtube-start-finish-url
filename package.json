@@ -6,7 +6,7 @@
   "author": "Onur Şimşek <posta@onursimsek.com>",
   "license": "MIT",
   "scripts": {
-    "start": ""
+    "start": "node index.js"
   },
   "devDependencies": {
     "browser-sync": "^2.18.5",
