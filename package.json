@@ -1,0 +1,12 @@
+{
+  "name": "YoutubeStartFinishUrl",
+  "version": "1.0.0",
+  "main": "index.html",
+  "repository": "https://github.com/onursimsek/youtube-start-finish-url.git",
+  "author": "Onur Şimşek <posta@onursimsek.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.18.5",
+    "gulp": "^3.9.1"
+  }
+}
