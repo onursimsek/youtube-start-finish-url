@@ -7,48 +7,54 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container">
+<div id="app" class="container">
     <div class="row">
         <div class="col-md-12">
             <h1>Youtube Link Generator</h1>
 
-            <form action="" class="form-horizontal">
+            <form action="" class="form-horizontal" @submit.prevent="getCroppedLink">
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Youtube URL</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="Youtube URL">
+                        <input type="text" class="form-control" placeholder="Youtube URL" v-model="link">
                     </div>
+                </div>
+
+                <div class="form-group text-center">
+                    <div class="col-md-offset-2 col-md-1">Hour</div>
+                    <div class="col-md-1">Minute</div>
+                    <div class="col-md-1">Second</div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Start Time</label>
                     <div class="col-md-1">
-                        <input type="text" class="form-control" placeholder="Hour" value="00">
+                        <input type="text" class="form-control" placeholder="Hour" v-model="start.hour">
                     </div>
                     <div class="col-md-1">
-                        <input type="text" class="form-control" placeholder="Minute" value="00">
+                        <input type="text" class="form-control" placeholder="Minute" v-model="start.minute">
                     </div>
                     <div class="col-md-1">
-                        <input type="text" class="form-control" placeholder="Second" value="00">
+                        <input type="text" class="form-control" placeholder="Second" v-model="start.second">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Finish Time</label>
                     <div class="col-md-1">
-                        <input type="text" class="form-control" placeholder="Hour" value="00">
+                        <input type="text" class="form-control" placeholder="Hour" v-model="finish.hour">
                     </div>
                     <div class="col-md-1">
-                        <input type="text" class="form-control" placeholder="Minute" value="00">
+                        <input type="text" class="form-control" placeholder="Minute" v-model="finish.minute">
                     </div>
                     <div class="col-md-1">
-                        <input type="text" class="form-control" placeholder="Second" value="00">
+                        <input type="text" class="form-control" placeholder="Second" v-model="finish.second">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" v-model="result">
                     </div>
                 </div>
 
@@ -63,6 +69,43 @@
 </div>
 
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            link: '',
+            start: {
+                hour: 0,
+                minute: 0,
+                second: 0
+            },
+            finish: {
+                hour: 0,
+                minute: 0,
+                second: 0
+            },
+            result: ''
+        },
+        methods: {
+            convertSecond: function (hour, minute, second) {
+                return (((hour * 60) + minute) * 60) + second;
+            },
+            getVideoId: function (link) {
+                // source: http://stackoverflow.com/a/8260383
+                var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+                var match = link.match(regExp);
+
+                return (match&&match[7].length==11)? match[7] : false;
+            },
+            getCroppedLink: function () {
+                var startSecond = this.convertSecond(this.start.hour, this.start.minute, this.start.second);
+                var finishSecond = this.convertSecond(this.finish.hour, this.finish.minute, this.finish.second);
+
+                this.result = 'http://www.youtube.com/v/' + this.getVideoId(this.link) + '?start=' + startSecond + '&end=' + finishSecond;
+            }
+        }
+    });
+</script>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
