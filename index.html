@@ -88,7 +88,7 @@
         },
         methods: {
             convertSecond: function (hour, minute, second) {
-                return (((hour * 60) + minute) * 60) + second;
+                return (((parseInt(hour) * 60) + parseInt(minute)) * 60) + parseInt(second);
             },
             getVideoId: function (link) {
                 // source: http://stackoverflow.com/a/8260383
