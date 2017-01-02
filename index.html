@@ -12,7 +12,7 @@
         <div class="col-md-12">
             <h1>Youtube Link Generator</h1>
 
-            <form action="" class="form-horizontal" @submit.prevent="getCroppedLink">
+            <form action="" class="form-horizontal" @submit.prevent>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Youtube URL</label>
                     <div class="col-sm-10">
@@ -54,21 +54,35 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <input type="text" class="form-control" v-model="result">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <div class="input-group">
+                            <input type="text" id="inpResult" class="form-control" placeholder="Cropped link..." v-model="croppedLink" readonly>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" data-toggle="modal" data-target="#preview" @click="previewVideo">
+                                    <span class="glyphicon glyphicon-new-window"></span>
+                                </button>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
+    <div id="preview" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <iframe :src="iframe.src" :width="iframe.width" :height="iframe.height" @load="load"
+                            v-show="iframe.loaded" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="//unpkg.com/vue"></script>
+<script src="//unpkg.com/jquery"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     var app = new Vue({
         el: '#app',
@@ -84,26 +98,56 @@
                 minute: 0,
                 second: 0
             },
-            result: ''
+            iframe: {
+                src: '',
+                width: '100%',
+                height: 488,
+                loaded: false
+            }
+        },
+        computed: {
+            startSecond: function () {
+                return this.convertSecond(this.start.hour, this.start.minute, this.start.second);
+            },
+            finishSecond: function () {
+                return this.convertSecond(this.finish.hour, this.finish.minute, this.finish.second);
+            },
+            croppedLink: function () {
+                return 'http://www.youtube.com/v/' + this.getVideoId(this.link)
+                + '?start=' + this.startSecond
+                + (this.finishSecond ? '&end=' + this.finishSecond : '');
+            }
         },
         methods: {
             convertSecond: function (hour, minute, second) {
-                return (((parseInt(hour) * 60) + parseInt(minute)) * 60) + parseInt(second);
+                var converted = (((parseInt(hour) * 60) + parseInt(minute)) * 60) + parseInt(second);
+                return !isNaN(converted) ? converted : 0;
             },
             getVideoId: function (link) {
                 // source: http://stackoverflow.com/a/8260383
                 var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
                 var match = link.match(regExp);
 
-                return (match&&match[7].length==11)? match[7] : false;
+                return (match && match[7].length == 11) ? match[7] : 'B35vsgBzMh4';
             },
-            getCroppedLink: function () {
-                var startSecond = this.convertSecond(this.start.hour, this.start.minute, this.start.second);
-                var finishSecond = this.convertSecond(this.finish.hour, this.finish.minute, this.finish.second);
-
-                this.result = 'http://www.youtube.com/v/' + this.getVideoId(this.link) + '?start=' + startSecond + '&end=' + finishSecond;
+            previewVideo: function () {
+                this.iframe.src = this.croppedLink + '&autoplay=1&iv_load_policy=3';
+            },
+            load: function () {
+                this.iframe.loaded = true;
             }
         }
+    });
+
+    $(function () {
+        $('#preview').on('hidden.bs.modal', function () {
+            app.iframe.loaded = false;
+            app.iframe.src = '';
+        });
+
+        $("#inpResult").click(function () {
+            $(this).select();
+        });
     });
 </script>
 <script>
