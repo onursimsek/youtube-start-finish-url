@@ -113,7 +113,7 @@
                 return this.convertSecond(this.finish.hour, this.finish.minute, this.finish.second);
             },
             croppedLink: function () {
-                return 'http://www.youtube.com/v/' + this.getVideoId(this.link)
+                return 'https://www.youtube.com/v/' + this.getVideoId(this.link)
                 + '?start=' + this.startSecond
                 + (this.finishSecond ? '&end=' + this.finishSecond : '');
             }
